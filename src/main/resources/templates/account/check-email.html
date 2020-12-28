@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments.html :: head"></head>
+<div class="wrap">
+<!--    header-->
+    <header th:replace="fragments.html :: main-nav" class="header"></header>
+<!--    header-->
+
+    <section>
+        <h1>와니스터디</h1>
+
+        <div th:if="${error != null}">
+            <div  class="alert alert-danger" role="alert" th:text="${error}"></div>
+            <small th:text="${email}"></small>
+        </div>
+
+        <div th:if="${error == null}">
+            <p>
+                와니스터디 가입을 완료하려면. <a th:href="@{/check-email}">계정 인증 이메일을 확인</a>하세요.
+            </p>
+            <ul>
+                <li th:text="${email}">yourEmail@gmail.com</li>
+                <li>
+                    <a th:href="@{/resend-confirm-email}">인증 이메일 다시 보내기</a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+<!--    footer-->
+    <footer th:replace="fragments.html :: footer"></footer>
+<!--    footer-->
+
+</div>
+</html>

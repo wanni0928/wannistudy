@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+
+<header th:fragment="main-nav" class="header">
+    <div class="container">
+        <h1 class="logo">
+            <a href="/" th:href="@{/}">Logo</a>
+        </h1>
+        <nav class="nav">
+            <ul class="search-from-area">
+                <li>
+                    <form action="@{/search/study}" class="search-form" method="get">
+                        <input name="keyword" type="search" placeholder="스터디 찾기" aria-label="Search" />
+                    </form>
+                </li>
+            </ul>
+            <ul class="user-utils">
+                <li sec:authorize="!isAuthenticated()">
+                    <a href="#" th:href="@{/login}">
+                        로그인
+                    </a>
+                </li>
+                <li sec:authorize="!isAuthenticated()">
+                    <a href="#" th:href="@{/sign-up}">
+                        가입
+                    </a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="#" th:href="@{/notification}">
+                        알림
+                    </a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="#" th:href="@{/notification}">
+                        스터디 개설
+                    </a>
+                    <h3>
+                        <a href="#">
+                            프로필
+                        </a>
+                    </h3>
+                    <ul>
+                        <li>
+                            <a href="#">
+                                설정
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                로그아웃
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<footer th:fragment="footer">
+    <h1>footer logo</h1>
+    <p>스터디를 열심히 합시다....</p>
+</footer>
+</html>
