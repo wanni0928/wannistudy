@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,7 +35,7 @@ public class AccountController {
     @GetMapping("/sign-up")
     public String signUp(Model model) {
         model.addAttribute(new SignUpForm()); // camelCase 로 인스턴스화 된 변수명으로 자동 변환
-        return "account/signUp";
+        return "account/sign-up";
     }
 
     @PostMapping("/sign-up")
@@ -85,15 +84,15 @@ public class AccountController {
         accountService.completeSignUp(account);
 
         model.addAttribute("numberOfUser", accountRepository.count());
-        model.addAttribute("nickName", account.getNickname());
+        model.addAttribute("nickname", account.getNickname());
         return view;
     }
 
-    @GetMapping("/profile/{nickName}")
-    public String viewProfile(@PathVariable String nickName, Model model, @CurrentUser Account account) {
-        Account byNickname = accountRepository.findByNickname(nickName);
+    @GetMapping("/profile/{nickname}")
+    public String viewProfile(@PathVariable String nickname, Model model, @CurrentUser Account account) {
+        Account byNickname = accountRepository.findByNickname(nickname);
         if(byNickname == null) {
-            throw new IllegalArgumentException(nickName + "에 해당하는 사용자가 없습니다.");
+            throw new IllegalArgumentException(nickname + "에 해당하는 사용자가 없습니다.");
         }
 
         model.addAttribute(byNickname);

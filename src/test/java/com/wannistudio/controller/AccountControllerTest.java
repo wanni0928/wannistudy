@@ -65,7 +65,7 @@ class AccountControllerTest {
                 .param("email", newAccount.getEmail())
         ).andExpect(status().isOk())
                 .andExpect(model().attributeDoesNotExist("error"))
-                .andExpect(model().attributeExists("nickName"))
+                .andExpect(model().attributeExists("nickname"))
                 .andExpect(model().attributeExists("numberOfUser"))
                 .andExpect(view().name("account/checkedEmail"))
                 .andExpect(authenticated())

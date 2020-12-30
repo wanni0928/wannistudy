@@ -33,10 +33,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/login-link").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/profile/*").permitAll()
                 .anyRequest().authenticated();
-        http.formLogin()
-                .loginPage("/login").permitAll();
+
+        http.formLogin().loginPage("/login").permitAll();
+
         http.logout()
                 .logoutSuccessUrl("/");
+
         http.rememberMe()
                 .userDetailsService(accountService)
                 .tokenRepository(tokenRepository());
