@@ -4,6 +4,7 @@ import com.wannistudio.controller.form.SignUpForm;
 import com.wannistudio.domain.Account;
 import com.wannistudio.domain.UserAccount;
 import com.wannistudio.repository.AccountRepository;
+import com.wannistudio.settings.Profile;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -84,5 +85,13 @@ public class AccountService implements UserDetailsService {
     public void completeSignUp(Account account) {
         account.completeSignUp();
         this.login(account);
+    }
+
+    public void updateProfile(Account account, Profile profile) {
+        account.setUrl(profile.getUrl());
+        account.setOccupation(profile.getOccupation());
+        account.setLocation(profile.getLocation());
+        account.setBio(profile.getBio());
+        accountRepository.save(account);
     }
 }
