@@ -4,14 +4,15 @@ import com.wannistudio.controller.form.SignUpForm;
 import com.wannistudio.domain.Account;
 import com.wannistudio.domain.UserAccount;
 import com.wannistudio.repository.AccountRepository;
-import com.wannistudio.settings.Profile;
+import com.wannistudio.settings.form.Notifications;
+import com.wannistudio.settings.form.Profile;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,6 +32,7 @@ public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     public Account processNewAccount(SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm);
@@ -88,10 +90,44 @@ public class AccountService implements UserDetailsService {
     }
 
     public void updateProfile(Account account, Profile profile) {
-        account.setUrl(profile.getUrl());
-        account.setOccupation(profile.getOccupation());
-        account.setLocation(profile.getLocation());
-        account.setBio(profile.getBio());
+        modelMapper.map(profile, account);
+
+//        account.setUrl(profile.getUrl());
+//        account.setOccupation(profile.getOccupation());
+//        account.setLocation(profile.getLocation());
+//        account.setBio(profile.getBio());
+//        account.setProfileImage(profile.getProfileImage());
         accountRepository.save(account);
+    }
+
+    public void updatePassword(Account account, String newPassword) {
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+    }
+
+    public void updateNotifications(Account account, Notifications notifications) {
+        modelMapper.map(notifications, account);
+//        account.setStudyCreatedByWeb(notifications.isStudyCreatedByWeb());
+//        account.setStudyCreatedByEmail(notifications.isStudyCreatedByEmail());
+//        account.setStudyUpdatedByWeb(notifications.isStudyUpdatedByWeb());
+//        account.setStudyUpdatedByEmail(notifications.isStudyUpdatedByEmail());
+//        account.setStudyEnrollmentResultByWeb(notifications.isStudyEnrollmentResultByWeb());
+//        account.setStudyEnrollmentResultByEmail(notifications.isStudyEnrollmentResultByEmail());
+        accountRepository.save(account);
+    }
+
+    public void updateNickName(Account account, String nickname) {
+        account.setNickname(nickname);
+        accountRepository.save(account);
+        login(account);
+    }
+
+    public void sendLoginLink(Account account) {
+        account.generateEmailCheckToken();
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(account.getEmail());
+        mailMessage.setSubject("와니스터디, 로그인 링크");
+        mailMessage.setText("/login-by-email?token=" + account.getEmailCheckToken() + "&email=" + account.getEmail());
+        javaMailSender.send(mailMessage);
     }
 }

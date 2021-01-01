@@ -82,4 +82,45 @@ class SettingsControllerTest {
         Account wanni = accountRepository.findByNickname("wanni");
         assertNull(wanni.getBio());
     }
+
+    @WithAccount("wanni")
+    @DisplayName("비밀번호 수정 폼")
+    @Test
+    void updatePassword_form() throws Exception {
+        mockMvc.perform(get(SettingsController.SETTING_PASSWORD_VIEW_URL)
+        ).andExpect(status().isOk())
+                .andExpect(model().attributeExists("account"))
+                .andExpect(model().attributeExists("passwordForm"))
+        ;
+    }
+
+    @WithAccount("wanni")
+    @DisplayName("비밀번호 수정하기 - 입력값 정상")
+    @Test
+    void updatePassword_success() throws Exception {
+        mockMvc.perform(post(SettingsController.SETTING_PASSWORD_VIEW_URL)
+                .param("newPassword", "12345678")
+                .param("newPasswordConfirm","12345678")
+                .with(csrf())
+        ).andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl(SettingsController.SETTING_PASSWORD_VIEW_URL))
+        .andExpect(flash().attributeExists("message"))
+        ;
+    }
+
+    @WithAccount("wanni")
+    @DisplayName("비밀번호 수정하기 - 입력값 오류")
+    @Test
+    void updatePassword_fail() throws Exception {
+        mockMvc.perform(post(SettingsController.SETTING_PASSWORD_VIEW_URL)
+                .param("newPassword", "123")
+                .param("newPasswordConfirm", "12345678")
+                .with(csrf())
+        ).andExpect(status().isOk())
+                .andExpect(view().name(SettingsController.SETTING_PASSWORD_VIEW_NAME))
+                .andExpect(model().hasErrors())
+                .andExpect(model().attributeExists("passwordForm"))
+                .andExpect(model().attributeExists("account"))
+        ;
+    }
 }
