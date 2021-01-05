@@ -2,7 +2,9 @@ package com.wannistudio.service;
 
 import com.wannistudio.controller.form.SignUpForm;
 import com.wannistudio.domain.Account;
+import com.wannistudio.domain.Tag;
 import com.wannistudio.domain.UserAccount;
+import com.wannistudio.domain.Zone;
 import com.wannistudio.repository.AccountRepository;
 import com.wannistudio.settings.form.Notifications;
 import com.wannistudio.settings.form.Profile;
@@ -21,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,20 +40,23 @@ public class AccountService implements UserDetailsService {
 
     public Account processNewAccount(SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm);
-        newAccount.generateEmailCheckToken();
+
         sendSignUpConfirmEmail(newAccount);
         return newAccount;
     }
 
     private Account saveNewAccount(SignUpForm signUpForm) {
-        Account account = Account.builder()
-                .email(signUpForm.getEmail())
-                .nickname(signUpForm.getNickname())
-                .password(passwordEncoder.encode(signUpForm.getPassword())) // TODO Encoding password
-                .studyCreatedByWeb(true)
-                .studyEnrollmentResultByWeb(true)
-                .studyUpdatedByWeb(true)
-                .build();
+        signUpForm.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
+        Account account = modelMapper.map(signUpForm, Account.class);
+        account.generateEmailCheckToken();
+//        Account account = Account.builder()
+//                .email(signUpForm.getEmail())
+//                .nickname(signUpForm.getNickname())
+//                .password(passwordEncoder.encode(signUpForm.getPassword()))
+//                .studyCreatedByWeb(true)
+//                .studyEnrollmentResultByWeb(true)
+//                .studyUpdatedByWeb(true)
+//                .build();
         return accountRepository.save(account);
     }
 
@@ -129,5 +136,37 @@ public class AccountService implements UserDetailsService {
         mailMessage.setSubject("와니스터디, 로그인 링크");
         mailMessage.setText("/login-by-email?token=" + account.getEmailCheckToken() + "&email=" + account.getEmail());
         javaMailSender.send(mailMessage);
+    }
+
+    public void addTag(Account account, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId()); // eager
+        byId.ifPresent(a -> a.getTags().add(tag));
+
+//        accountRepository.getOne(); // lazy
+    }
+
+    public Set<Tag> getTags(Account account) throws Exception {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow(Exception::new).getTags();
+    }
+
+    public void removeTag(Account account, Tag tag) throws Exception {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.orElseThrow(Exception::new).getTags().remove(tag);
+    }
+
+    public Set<Zone> getZones(Account account) throws Exception {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow(Exception::new).getZones();
+    }
+
+    public void addZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().add(zone));
+    }
+
+    public void removeZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().remove(zone));
     }
 }

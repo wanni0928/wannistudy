@@ -78,7 +78,7 @@ class AccountControllerTest {
         mockMvc.perform(get("/sign-up"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/signUp"))
+                .andExpect(view().name("account/sign-up"))
                 .andExpect(model().attributeExists("signUpForm"))
         ;
     }
