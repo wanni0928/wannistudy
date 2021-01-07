@@ -1,19 +1,9 @@
 spring:
-  profiles:
-    active: local
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
 
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        format_sql: true
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql:
-              BasicBinder: TRACE
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: testuser
+    password: Zpzigi9!04
